@@ -7,7 +7,6 @@
 
 
 enum direction{UP, DOWN, RIGHT, LEFT};
-enum orientation{VERTICAL, HORIZONTAL};
 
 
 int random_range(int l, int u);
