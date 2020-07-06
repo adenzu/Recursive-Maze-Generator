@@ -28,28 +28,26 @@ int check_proceedable(int x, int y, enum direction d, int fw, int fh, int ** fie
 	int i, j;
 
 	if(x >= 0 && x < fw && y >= 0 && y < fh){
+		y_range = (int *) calloc(3, sizeof(int));
+		x_range = (int *) calloc(3, sizeof(int));
 		switch(d){
 			case UP:
-				y_range = (int *) calloc(yl = 2, sizeof(int));
-				x_range = (int *) calloc(xl = 3, sizeof(int));
+				yl = 2; xl = 3;
 				x_range[0] = -1; x_range[1] = 0; x_range[2] = 1;
 				y_range[0] = 0; y_range[1] = 1;
 				break;
 			case DOWN:
-				y_range = (int *) calloc(yl = 2, sizeof(int));
-				x_range = (int *) calloc(xl = 3, sizeof(int));
+				yl = 2; xl = 3;
 				x_range[0] = -1; x_range[1] = 0; x_range[2] = 1;
 				y_range[0] = 0; y_range[1] = -1;
 				break;
 			case RIGHT:
-				y_range = (int *) calloc(yl = 3, sizeof(int));
-				x_range = (int *) calloc(xl = 2, sizeof(int));
+				yl = 3; xl = 2;
 				y_range[0] = -1; y_range[1] = 0; y_range[2] = 1;
 				x_range[0] = 0; x_range[1] = 1;
 				break;
 			case LEFT:
-				y_range = (int *) calloc(yl = 3, sizeof(int));
-				x_range = (int *) calloc(xl = 2, sizeof(int));
+				yl = 3; xl = 2;
 				y_range[0] = -1; y_range[1] = 0; y_range[2] = 1;
 				x_range[0] = 0; x_range[1] = -1;
 				break;
@@ -61,11 +59,10 @@ int check_proceedable(int x, int y, enum direction d, int fw, int fh, int ** fie
 				if(cy >= 0 && cx >= 0 && cy < fh && cx < fw && field[cy][cx] == 0) result = 0;
 			}
 		}
+		free(x_range);
+		free(y_range);
 	}
 	else result = 0;
-
-	free(x_range);
-	free(y_range);
 
 	return result;
 }
@@ -81,60 +78,36 @@ void shuffle_directions(enum direction * da, int len){
 	for(i = 0; i < len-1; i++) swap_directions(da, i, random_range(i+1, len));
 }
 
-enum direction * detect_possibilities(int x, int y, int fw, int fh, int ** field, int * possible_direction_count){
-	int i = 0;
-	enum direction * possible_directions = (enum direction *) calloc(4, sizeof(enum direction));
-	if(check_proceedable(x, y+1, UP, fw, fh, field)) possible_directions[i++] = UP;
-	if(check_proceedable(x, y-1, DOWN, fw, fh, field)) possible_directions[i++] = DOWN;
-	if(check_proceedable(x+1, y, RIGHT, fw, fh, field)) possible_directions[i++] = RIGHT;
-	if(check_proceedable(x-1, y, LEFT, fw, fh, field)) possible_directions[i++] = LEFT;
-	*possible_direction_count = i;
-	return possible_directions;
-}
-
-enum direction * get_direction_array_sample(enum direction * da, int len, int sample_len){
-	
-	int i;
-	enum direction * sample_array = (enum direction *) calloc(sample_len, sizeof(enum direction));
-	shuffle_directions(da, len);
-	for(i = 0; i < sample_len; i++) sample_array[i] = da[i];
-	return sample_array;
+enum direction * get_directions(){
+	enum direction * new_directions_p = (enum direction *) calloc(4, sizeof(enum direction));
+	new_directions_p[0] = UP;
+	new_directions_p[1] = DOWN;
+	new_directions_p[2] = RIGHT;
+	new_directions_p[3] = LEFT;
+	return new_directions_p;
 }
 
 void wander_randomly(int x, int y, int fw, int fh, int ** field){
 
-	int possible_direction_count;
-	enum direction * possible_directions = detect_possibilities(x, y, fw, fh, field, &possible_direction_count);
+	int i, nx, ny;
+	enum direction * pd_pointer = get_directions();
+	shuffle_directions(pd_pointer, 4);
 
-	if(possible_direction_count){
-		int chosen_direction_count = random_range(1, possible_direction_count+1), i;
-		enum direction * chosen_directions;
+	field[y][x] = 0;
 
-		if(chosen_direction_count == possible_direction_count) chosen_directions = possible_directions;
-		else chosen_directions = get_direction_array_sample(possible_directions, possible_direction_count, chosen_direction_count);
-		
+	for(i = 0; i < 4; i++){
+		nx = x; ny = y;
 
-		for(i = 0; i < chosen_direction_count; i++){
-			switch(chosen_directions[i]){
-				case UP:	field[y+1][x] = 0; break;
-				case DOWN:	field[y-1][x] = 0; break;
-				case RIGHT:	field[y][x+1] = 0; break;
-				case LEFT:	field[y][x-1] = 0; break;
-			}
+		switch(*pd_pointer){
+			case UP:	ny++;	break;
+			case DOWN: 	ny--;	break;
+			case RIGHT: nx++;	break;
+			case LEFT: 	nx--;
 		}
 
-		for(i = 0; i < chosen_direction_count; i++){
-			switch(chosen_directions[i]){
-				case UP:	wander_randomly(x, y+1, fw, fh, field); break;
-				case DOWN:	wander_randomly(x, y-1, fw, fh, field); break;
-				case RIGHT:	wander_randomly(x+1, y, fw, fh, field); break;
-				case LEFT:	wander_randomly(x-1, y, fw, fh, field); break;
-			}
-		}
-
-		free(chosen_directions);
+		if(check_proceedable(nx, ny, *pd_pointer++, fw, fh, field)) wander_randomly(nx, ny, fw, fh, field);
 	}
-	free(possible_directions);
+	free(pd_pointer);
 }
 
 int ** surround_field(int fw, int fh, int ** field){
@@ -196,7 +169,7 @@ void draw_equilateral_shape_side_length(FILE * file, double x, double y, double 
 	fprintf(file, "stroke\n");
 }
 
-void draw_field(char * field_name, int fw, int fh, int ** field){
+void draw_field(char * field_name, double side_length, int fw, int fh, int ** field){
 
 	int i, j;
 
@@ -204,7 +177,6 @@ void draw_field(char * field_name, int fw, int fh, int ** field){
 	fw += 2;
 	fh += 2;
 
-	double side_length = 5;
 	double half_side_len = side_length / 2;
 	double width = fw * side_length;
 	double height = fh * side_length;
@@ -218,7 +190,5 @@ void draw_field(char * field_name, int fw, int fh, int ** field){
 			if(drawn_field[j][i]) draw_equilateral_shape_side_length(file, half_side_len + i * side_length, half_side_len + j * side_length, side_length, 4);
 		}
 	}
-
 	fclose(file);
-
 }
