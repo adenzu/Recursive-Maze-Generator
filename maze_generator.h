@@ -20,6 +20,5 @@ void draw_field(char * field_name, double side_length, int fw, int fh, int ** fi
 int ** surround_field(int fw, int fh, int ** field);
 enum direction * get_directions();
 void wander_randomly(int x, int y, int fw, int fh, int ** field);
-void print_field(int fw, int fh, int ** field);
 
 #endif

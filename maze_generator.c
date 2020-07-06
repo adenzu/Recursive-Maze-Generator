@@ -130,24 +130,6 @@ int ** surround_field(int fw, int fh, int ** field){
 	return new_field;
 }
 
-void print_field(int fw, int fh, int ** field){
-
-	int i;
-	for(i = 0; i < fw+2; i++) printf("#");
-	printf("\n");
-	for(fh--; fh >= 0; fh--){
-		printf("#");
-		for(i = 0; i < fw; i++){
-			if(field[fh][i]) printf("#");
-			else printf(" ");
-		}
-		printf("#\n");
-	}
-	for(i = 0; i < fw+2; i++) printf("#");
-	printf("\n");
-	printf("\n");
-}
-
 void draw_equilateral_shape_side_length(FILE * file, double x, double y, double side_length, int side_count){
 
 	int i;
