@@ -67,6 +67,27 @@ int check_proceedable(int x, int y, enum direction d, int fw, int fh, int ** fie
 	return result;
 }
 
+void fill_field_seperately(int fw, int fh, int ** field, int dx, int dy){
+
+	int i, j, k;
+
+	int times_w = fw / dx;
+	int times_h = fh / dy;
+
+	int upper_limit_y;
+	int upper_limit_x;
+
+	for(j = 0; j < times_h; j++){
+		for(i = 0; i < times_w; i++){
+
+			if((upper_limit_x = (i + 1) * dx) > fw) upper_limit_x = fw;
+			if((upper_limit_y = (j + 1) * dy) > fh) upper_limit_y = fh;
+
+			wander_randomly(dx/2 + i * dx, dy/2 + j * dy, upper_limit_x, upper_limit_y, field);
+		}
+	}
+}
+
 void swap_directions(enum direction * da, int f, int s){
 	enum direction temp = da[f];
 	da[f] = da[s];
