@@ -23,32 +23,28 @@ int ** create_field(int width, int height){
 int check_proceedable(int x, int y, enum direction d, int fw, int fh, int ** field){
 	int result = 1;
 	int * x_range, * y_range;
-	int yl, xl;
+	int yl = 2, xl = 2;
 	int cy, cx;
 	int i, j;
 
-	if(x >= 0 && x < fw && y >= 0 && y < fh){
-		y_range = (int *) calloc(3, sizeof(int));
-		x_range = (int *) calloc(3, sizeof(int));
+	if(x >= 0 && x < fw && y >= 0 && y < fh && field[y][x]){
+		y_range = (int *) calloc(yl, sizeof(int));
+		x_range = (int *) calloc(xl, sizeof(int));
 		switch(d){
 			case UP:
-				yl = 2; xl = 3;
-				x_range[0] = -1; x_range[1] = 0; x_range[2] = 1;
+				x_range[0] = -1; x_range[1] = 1;
 				y_range[0] = 0; y_range[1] = 1;
 				break;
 			case DOWN:
-				yl = 2; xl = 3;
-				x_range[0] = -1; x_range[1] = 0; x_range[2] = 1;
+				x_range[0] = -1; x_range[1] = 1;
 				y_range[0] = 0; y_range[1] = -1;
 				break;
 			case RIGHT:
-				yl = 3; xl = 2;
-				y_range[0] = -1; y_range[1] = 0; y_range[2] = 1;
+				y_range[0] = -1; y_range[1] = 1;
 				x_range[0] = 0; x_range[1] = 1;
 				break;
 			case LEFT:
-				yl = 3; xl = 2;
-				y_range[0] = -1; y_range[1] = 0; y_range[2] = 1;
+				y_range[0] = -1; y_range[1] = 1;
 				x_range[0] = 0; x_range[1] = -1;
 				break;
 		}
@@ -83,7 +79,7 @@ void fill_field_seperately(int fw, int fh, int ** field, int dx, int dy){
 			if((upper_limit_x = (i + 1) * dx) > fw) upper_limit_x = fw;
 			if((upper_limit_y = (j + 1) * dy) > fh) upper_limit_y = fh;
 
-			wander_randomly(dx/2 + i * dx, dy/2 + j * dy, upper_limit_x, upper_limit_y, field);
+			wander_randomly(1 + i * dx, 1 + j * dy, upper_limit_x, upper_limit_y, field);
 		}
 	}
 }
