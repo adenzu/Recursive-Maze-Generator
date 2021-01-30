@@ -20,8 +20,8 @@ int main(){
 	scanf("%lf", &side_len);
 
 	int ** f = create_field(fw, fh);
-	//wander_randomly(fh/2, fw/2, fw, fh, f);
-	fill_field_seperately(fw, fh, f, dx, dy);
+	//wander_randomly(fh/2, fw/2, fw, fh, f); // <--- much better at creating mazes, but recursive thus limited
+	fill_field_seperately(fw, fh, f, dx, dy); // <--- worse at creating mazes but practically able to create infinite size
 
 	draw_field("generated_maze_samples/generated_maze.eps", side_len, fw, fh, f);
 	printf("done\n");
